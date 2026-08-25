@@ -151,8 +151,13 @@ def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     PAGES_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 분석 대상 컬럼을 추출한다. 전체 목록은 기초통계 산출물에서 관리한다.
+    # 분석 대상 컬럼을 추출하고 전체 목록을 별도 파일로 저장
     numeric_df = df[NUMERIC_FEATURES]
+    numeric_df.to_csv(
+        OUTPUT_DIR / "selected_numeric_features.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
 
     # Type과 고장 여부별로 주요 수치형 변수의 평균과 표본 수를 계산
     type_summary = add_sample_count(

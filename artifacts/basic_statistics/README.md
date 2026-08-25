@@ -7,10 +7,25 @@
 ## 파일 설명
 
 - `data_overview.csv`: 전체 컬럼의 데이터 타입과 결측치 개수
+- `selected_numeric_features.csv`: 원본 데이터에서 추출한 주요 수치형 독립변수 5개와 10,000개 관측값
+- `feature_means.csv`: 추출한 각 변수의 평균
 - `numeric_summary.csv`: 주요 수치형 독립변수의 `count`, `mean`, `std`, `min`, `25%`, `50%`, `75%`, `max`
 - `machine_failure_distribution.csv`: `Machine failure`의 0/1별 개수, 비율, 백분율
 
 모든 CSV는 Excel에서도 한글이 깨지지 않도록 `utf-8-sig` 인코딩으로 저장한다. 분석 결과는 `src/eda_basic_statistics.py`를 실행해 다시 생성할 수 있다.
+
+## 분석 순서
+
+1. pandas의 `read_csv()`로 원본 데이터를 불러온다.
+2. 데이터 크기, 전체 컬럼명, 데이터 타입과 결측치를 확인한다.
+3. 다음 주요 수치형 독립변수 5개만 추출한다.
+   - `Air temperature [K]`
+   - `Process temperature [K]`
+   - `Rotational speed [rpm]`
+   - `Torque [Nm]`
+   - `Tool wear [min]`
+4. 추출한 각 변수의 평균과 `describe()` 기초통계를 산출한다.
+5. `Machine failure`의 정상·고장 개수와 비율을 산출한다.
 
 ## 주요 결과 및 제조설비 관점 해석
 

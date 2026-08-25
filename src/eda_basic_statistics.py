@@ -57,6 +57,20 @@ def main() -> None:
     print(failure_distribution)
 
     # 후속 분석에서 바로 활용할 수 있도록 표 형태로 저장
+    numeric_df.to_csv(
+        OUTPUT_DIR / "selected_numeric_features.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+
+    means_table = means.rename("mean").to_frame()
+    means_table.index.name = "feature"
+    means_table.to_csv(
+        OUTPUT_DIR / "feature_means.csv",
+        encoding="utf-8-sig",
+        float_format="%.6f",
+    )
+
     summary_by_feature = summary.T
     summary_by_feature.index.name = "feature"
     summary_by_feature.to_csv(

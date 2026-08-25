@@ -15,14 +15,14 @@
 
 ## 파일 설명
 
-- `selected_numeric_features.csv`: 주요 수치형 독립변수 5개의 전체 10,000행
-- `group_by_type.csv`: `Type`별 표본 수와 주요 변수 평균
-- `group_by_machine_failure.csv`: 정상·고장별 표본 수와 주요 변수 평균
-- `tool_wear_sorted_ascending.csv`: 공구 마모 및 회전속도 오름차순 전체 목록
-- `tool_wear_sorted_descending.csv`: 공구 마모 및 회전속도 내림차순 전체 목록
-- `eda_report.html`: 데이터 구조, 기초통계, 그룹 연산, 정렬 결과와 해석을 정리한 통합 보고서
+- [`selected_numeric_features.csv`](../basic_statistics/selected_numeric_features.csv): 기초통계 폴더에서 단일 기준본으로 관리하는 주요 수치형 독립변수 5개의 전체 10,000행
+- [`group_by_type.csv`](group_by_type.csv): `Type`별 표본 수와 주요 변수 평균
+- [`group_by_machine_failure.csv`](group_by_machine_failure.csv): 정상·고장별 표본 수와 주요 변수 평균
+- [`tool_wear_sorted_ascending.csv`](tool_wear_sorted_ascending.csv): 공구 마모 및 회전속도 오름차순 전체 목록
+- [`tool_wear_sorted_descending.csv`](tool_wear_sorted_descending.csv): 공구 마모 및 회전속도 내림차순 전체 목록
+- [`eda_report.html`](eda_report.html): 데이터 구조, 기초통계, 그룹 연산, 정렬 결과와 해석을 정리한 통합 보고서
 
-모든 CSV는 `utf-8-sig`, HTML은 UTF-8로 저장한다. 결과는 `src/eda_data_manipulation.py`를 실행해 다시 생성할 수 있다. 동일한 HTML은 GitHub Pages 게시용 `docs/index.html`에도 저장한다.
+모든 CSV는 `utf-8-sig`, HTML은 UTF-8로 저장한다. 결과는 [`src/eda_data_manipulation.py`](../../src/eda_data_manipulation.py)를 실행해 다시 생성할 수 있다. 동일한 HTML은 GitHub Pages 게시용 [`docs/index.html`](../../docs/index.html)에도 저장한다.
 
 ## 해석 시 주의사항
 
@@ -30,3 +30,9 @@
 - `Machine failure` 그룹 비교는 탐색 목적이며, 고장 결과 컬럼을 향후 모델 입력으로 사용하지 않는다.
 - 정렬 결과는 극단적인 공구 마모 관측값을 찾기 위한 목록이며 고장 판정 기준 자체는 아니다.
 - 현재 단계에는 시각화와 지도학습 모델링이 포함되지 않는다.
+
+## 관련 문서
+
+- [프로젝트 전체 흐름](../../README.md)
+- [이전 단계: 기초통계](../basic_statistics/README.md)
+- [데이터 출처 및 분석 근거](../../references/README.md)

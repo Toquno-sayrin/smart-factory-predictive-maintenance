@@ -1,0 +1,15 @@
+﻿column,dtype,missing_count
+UDI,int64,0
+Product ID,str,0
+Type,str,0
+Air temperature [K],float64,0
+Process temperature [K],float64,0
+Rotational speed [rpm],int64,0
+Torque [Nm],float64,0
+Tool wear [min],int64,0
+Machine failure,int64,0
+TWF,int64,0
+HDF,int64,0
+PWF,int64,0
+OSF,int64,0
+RNF,int64,0

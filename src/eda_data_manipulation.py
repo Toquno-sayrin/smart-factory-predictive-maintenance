@@ -6,6 +6,7 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = PROJECT_ROOT / "data" / "ai4i2020.csv"
 OUTPUT_DIR = PROJECT_ROOT / "artifacts" / "data_manipulation"
+PAGES_DIR = PROJECT_ROOT / "docs"
 
 NUMERIC_FEATURES = [
     "Air temperature [K]",
@@ -148,6 +149,7 @@ def main() -> None:
     """그룹 연산과 정렬을 수행하고 CSV 및 HTML 보고서를 저장한다."""
     df = pd.read_csv(DATA_PATH)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    PAGES_DIR.mkdir(parents=True, exist_ok=True)
 
     # 분석 대상 컬럼을 추출하고 전체 목록을 별도 파일로 저장
     numeric_df = df[NUMERIC_FEATURES]
@@ -199,7 +201,10 @@ def main() -> None:
         sorted_ascending,
         sorted_descending,
     )
-    (OUTPUT_DIR / "eda_report.html").write_text(report, encoding="utf-8")
+    report_path = OUTPUT_DIR / "eda_report.html"
+    pages_path = PAGES_DIR / "index.html"
+    report_path.write_text(report, encoding="utf-8")
+    pages_path.write_text(report, encoding="utf-8")
 
     print("[1] Type별 주요 변수 평균")
     print(type_summary)
@@ -209,7 +214,8 @@ def main() -> None:
     print(sorted_ascending.head(10))
     print(f"\n[4] {SORT_COLUMN} 내림차순 상위 10행")
     print(sorted_descending.head(10))
-    print(f"\nHTML 보고서: {OUTPUT_DIR / 'eda_report.html'}")
+    print(f"\nHTML 보고서: {report_path}")
+    print(f"GitHub Pages 게시 파일: {pages_path}")
 
 
 if __name__ == "__main__":

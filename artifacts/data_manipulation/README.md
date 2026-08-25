@@ -22,7 +22,7 @@
 - `tool_wear_sorted_descending.csv`: 공구 마모 및 회전속도 내림차순 전체 목록
 - `eda_report.html`: 데이터 구조, 기초통계, 그룹 연산, 정렬 결과와 해석을 정리한 통합 보고서
 
-모든 CSV는 `utf-8-sig`, HTML은 UTF-8로 저장한다. 결과는 `src/eda_data_manipulation.py`를 실행해 다시 생성할 수 있다.
+모든 CSV는 `utf-8-sig`, HTML은 UTF-8로 저장한다. 결과는 `src/eda_data_manipulation.py`를 실행해 다시 생성할 수 있다. 동일한 HTML은 GitHub Pages 게시용 `docs/index.html`에도 저장한다.
 
 ## 해석 시 주의사항
 

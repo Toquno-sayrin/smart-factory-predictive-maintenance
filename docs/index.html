@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI4I 2020 EDA 데이터 조작 보고서</title>
+<style>
+  body { font-family: "Malgun Gothic", sans-serif; margin: 40px; color: #222; background: #f7f9fc; }
+  main { max-width: 1200px; margin: 0 auto; }
+  h1 { border-bottom: 3px solid #4472c4; padding-bottom: 10px; }
+  h2 { margin-top: 42px; color: #2e4a7d; border-left: 5px solid #4472c4; padding-left: 10px; }
+  h3 { margin-top: 28px; color: #374f78; }
+  .meta, .note { color: #5d6470; font-size: 14px; }
+  .cards { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
+  .card { background: #fff; border: 1px solid #dce3ef; border-radius: 8px; padding: 16px; min-width: 180px; }
+  .card strong { display: block; color: #2e4a7d; font-size: 22px; margin-top: 6px; }
+  .table-wrap { overflow-x: auto; background: #fff; border: 1px solid #dce3ef; border-radius: 8px; padding: 8px; }
+  table.data-table { border-collapse: collapse; width: 100%; }
+  .data-table th, .data-table td { border: 1px solid #ddd; padding: 7px 10px; font-size: 13px; text-align: right; white-space: nowrap; }
+  .data-table th { background: #4472c4; color: #fff; }
+  .data-table td:first-child, .data-table th:first-child { text-align: left; }
+  .insight { background: #eef4ff; border-left: 4px solid #4472c4; padding: 12px 16px; line-height: 1.7; }
+  code { background: #edf0f5; padding: 2px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+<h1>AI4I 2020 EDA 데이터 조작 보고서</h1>
+<p class="meta">EDA 범위: 컬럼 추출·기초통계·전체 목록 저장·그룹 연산·오름차순/내림차순 정렬</p>
+
+<div class="cards">
+  <div class="card">전체 행<strong>10,000</strong></div>
+  <div class="card">전체 컬럼<strong>14</strong></div>
+  <div class="card">결측치<strong>0</strong></div>
+  <div class="card">고장 비율<strong>3.39%</strong></div>
+</div>
+
+<h2>1. 전체 컬럼 목록과 데이터 품질</h2>
+<p class="note">전체 컬럼의 데이터 타입과 결측치 개수를 확인했다.</p>
+<div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>dtype</th>
+      <th>missing_count</th>
+    </tr>
+    <tr>
+      <th>column</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>UDI</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Product ID</th>
+      <td>str</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Type</th>
+      <td>str</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Air temperature [K]</th>
+      <td>float64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Process temperature [K]</th>
+      <td>float64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Rotational speed [rpm]</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Torque [Nm]</th>
+      <td>float64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Tool wear [min]</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Machine failure</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>TWF</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>HDF</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>PWF</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>OSF</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>RNF</th>
+      <td>int64</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table></div>
+
+<h2>2. 주요 수치형 컬럼 추출</h2>
+<p class="note">추출한 5개 컬럼의 전체 10,000행은 <code>selected_numeric_features.csv</code>에 저장했으며 아래에는 처음 10행만 표시한다.</p>
+<div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Air temperature [K]</th>
+      <th>Process temperature [K]</th>
+      <th>Rotational speed [rpm]</th>
+      <th>Torque [Nm]</th>
+      <th>Tool wear [min]</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>298.100000</td>
+      <td>308.600000</td>
+      <td>1551</td>
+      <td>42.800000</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>298.200000</td>
+      <td>308.700000</td>
+      <td>1408</td>
+      <td>46.300000</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>298.100000</td>
+      <td>308.500000</td>
+      <td>1498</td>
+      <td>49.400000</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>298.200000</td>
+      <td>308.600000</td>
+      <td>1433</td>
+      <td>39.500000</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>298.200000</td>
+      <td>308.700000</td>
+      <td>1408</td>
+      <td>40.000000</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>298.100000</td>
+      <td>308.600000</td>
+      <td>1425</td>
+      <td>41.900000</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <td>298.100000</td>
+      <td>308.600000</td>
+      <td>1558</td>
+      <td>42.400000</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>298.100000</td>
+      <td>308.600000</td>
+      <td>1527</td>
+      <td>40.200000</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>298.300000</td>
+      <td>308.700000</td>
+      <td>1667</td>
+      <td>28.600000</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <td>298.500000</td>
+      <td>309.000000</td>
+      <td>1741</td>
+      <td>28.000000</td>
+      <td>21</td>
+    </tr>
+  </tbody>
+</table></div>
+
+<h2>3. 추출 컬럼 기초통계</h2>
+<div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>mean</th>
+      <th>std</th>
+      <th>min</th>
+      <th>25%</th>
+      <th>50%</th>
+      <th>75%</th>
+      <th>max</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Air temperature [K]</th>
+      <td>10000.000000</td>
+      <td>300.004930</td>
+      <td>2.000259</td>
+      <td>295.300000</td>
+      <td>298.300000</td>
+      <td>300.100000</td>
+      <td>301.500000</td>
+      <td>304.500000</td>
+    </tr>
+    <tr>
+      <th>Process temperature [K]</th>
+      <td>10000.000000</td>
+      <td>310.005560</td>
+      <td>1.483734</td>
+      <td>305.700000</td>
+      <td>308.800000</td>
+      <td>310.100000</td>
+      <td>311.100000</td>
+      <td>313.800000</td>
+    </tr>
+    <tr>
+      <th>Rotational speed [rpm]</th>
+      <td>10000.000000</td>
+      <td>1538.776100</td>
+      <td>179.284096</td>
+      <td>1168.000000</td>
+      <td>1423.000000</td>
+      <td>1503.000000</td>
+      <td>1612.000000</td>
+      <td>2886.000000</td>
+    </tr>
+    <tr>
+      <th>Torque [Nm]</th>
+      <td>10000.000000</td>
+      <td>39.986910</td>
+      <td>9.968934</td>
+      <td>3.800000</td>
+      <td>33.200000</td>
+      <td>40.100000</td>
+      <td>46.800000</td>
+      <td>76.600000</td>
+    </tr>
+    <tr>
+      <th>Tool wear [min]</th>
+      <td>10000.000000</td>
+      <td>107.951000</td>
+      <td>63.654147</td>
+      <td>0.000000</td>
+      <td>53.000000</td>
+      <td>108.000000</td>
+      <td>162.000000</td>
+      <td>253.000000</td>
+    </tr>
+  </tbody>
+</table></div>
+
+<h2>4. 그룹별 컬럼 집계</h2>
+<h3>4.1 제품 품질 유형(Type)별 평균</h3>
+<div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sample_count</th>
+      <th>Air temperature [K]</th>
+      <th>Process temperature [K]</th>
+      <th>Rotational speed [rpm]</th>
+      <th>Torque [Nm]</th>
+      <th>Tool wear [min]</th>
+    </tr>
+    <tr>
+      <th>Type</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>H</th>
+      <td>1003</td>
+      <td>299.866999</td>
+      <td>309.925723</td>
+      <td>1538.147557</td>
+      <td>39.838285</td>
+      <td>107.419741</td>
+    </tr>
+    <tr>
+      <th>L</th>
+      <td>6000</td>
+      <td>300.015833</td>
+      <td>310.012300</td>
+      <td>1539.469167</td>
+      <td>39.996600</td>
+      <td>108.378833</td>
+    </tr>
+    <tr>
+      <th>M</th>
+      <td>2997</td>
+      <td>300.029263</td>
+      <td>310.018785</td>
+      <td>1537.598932</td>
+      <td>40.017251</td>
+      <td>107.272272</td>
+    </tr>
+  </tbody>
+</table></div>
+<h3>4.2 설비 정상·고장별 평균</h3>
+<div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sample_count</th>
+      <th>Air temperature [K]</th>
+      <th>Process temperature [K]</th>
+      <th>Rotational speed [rpm]</th>
+      <th>Torque [Nm]</th>
+      <th>Tool wear [min]</th>
+    </tr>
+    <tr>
+      <th>Machine failure</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>9661</td>
+      <td>299.973999</td>
+      <td>309.995570</td>
+      <td>1540.260014</td>
+      <td>39.629655</td>
+      <td>106.693717</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>339</td>
+      <td>300.886431</td>
+      <td>310.290265</td>
+      <td>1496.486726</td>
+      <td>50.168142</td>
+      <td>143.781711</td>
+    </tr>
+  </tbody>
+</table></div>
+
+<h2>5. 정렬 결과</h2>
+<p class="note"><code>Tool wear [min]</code>을 우선 기준으로, 동일한 값에서는 <code>Rotational speed [rpm]</code>을 보조 기준으로 정렬했다. 전체 결과는 각 CSV에 저장했다.</p>
+<h3>5.1 오름차순 상위 10행</h3>
+<div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Type</th>
+      <th>Air temperature [K]</th>
+      <th>Process temperature [K]</th>
+      <th>Rotational speed [rpm]</th>
+      <th>Torque [Nm]</th>
+      <th>Tool wear [min]</th>
+      <th>Machine failure</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>L</td>
+      <td>302.300000</td>
+      <td>311.700000</td>
+      <td>1281</td>
+      <td>48.800000</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>M</td>
+      <td>296.700000</td>
+      <td>307.800000</td>
+      <td>1286</td>
+      <td>60.500000</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>302.600000</td>
+      <td>312.100000</td>
+      <td>1288</td>
+      <td>68.500000</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>297.500000</td>
+      <td>308.800000</td>
+      <td>1309</td>
+      <td>57.300000</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>302.600000</td>
+      <td>311.600000</td>
+      <td>1311</td>
+      <td>53.200000</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>297.500000</td>
+      <td>309.600000</td>
+      <td>1312</td>
+      <td>50.700000</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>H</td>
+      <td>298.200000</td>
+      <td>307.600000</td>
+      <td>1318</td>
+      <td>55.700000</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>M</td>
+      <td>301.500000</td>
+      <td>310.700000</td>
+      <td>1336</td>
+      <td>65.600000</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>M</td>
+      <td>300.600000</td>
+      <td>310.700000</td>
+      <td>1339</td>
+      <td>52.900000</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>M</td>
+      <td>297.100000</td>
+      <td>308.100000</td>
+      <td>1352</td>
+      <td>44.400000</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table></div>
+<h3>5.2 내림차순 상위 10행</h3>
+<div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Type</th>
+      <th>Air temperature [K]</th>
+      <th>Process temperature [K]</th>
+      <th>Rotational speed [rpm]</th>
+      <th>Torque [Nm]</th>
+      <th>Tool wear [min]</th>
+      <th>Machine failure</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>M</td>
+      <td>302.600000</td>
+      <td>312.300000</td>
+      <td>1454</td>
+      <td>54.800000</td>
+      <td>253</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>302.700000</td>
+      <td>312.400000</td>
+      <td>1477</td>
+      <td>46.300000</td>
+      <td>251</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>299.000000</td>
+      <td>310.200000</td>
+      <td>1412</td>
+      <td>44.100000</td>
+      <td>246</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>H</td>
+      <td>302.800000</td>
+      <td>312.400000</td>
+      <td>1411</td>
+      <td>53.800000</td>
+      <td>246</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>H</td>
+      <td>300.600000</td>
+      <td>309.400000</td>
+      <td>1380</td>
+      <td>47.600000</td>
+      <td>246</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>302.900000</td>
+      <td>312.400000</td>
+      <td>1923</td>
+      <td>23.900000</td>
+      <td>244</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>299.000000</td>
+      <td>310.200000</td>
+      <td>1690</td>
+      <td>30.700000</td>
+      <td>244</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>300.600000</td>
+      <td>309.400000</td>
+      <td>1471</td>
+      <td>44.100000</td>
+      <td>244</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>300.600000</td>
+      <td>309.500000</td>
+      <td>1867</td>
+      <td>23.000000</td>
+      <td>242</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>299.100000</td>
+      <td>310.300000</td>
+      <td>1619</td>
+      <td>31.100000</td>
+      <td>242</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table></div>
+
+<h2>6. Machine failure 분포</h2>
+<div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>percentage</th>
+    </tr>
+    <tr>
+      <th>Machine failure</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>9661</td>
+      <td>96.610000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>339</td>
+      <td>3.390000</td>
+    </tr>
+  </tbody>
+</table></div>
+
+<h2>7. 제조설비 관점 해석</h2>
+<div class="insight">
+  <ul>
+    <li>전체 컬럼에서 결측치가 발견되지 않아 이번 단계에서는 결측치 처리로 인한 표본 손실이 없다.</li>
+    <li>정상 96.61%, 고장 3.39%로 클래스 불균형이 크므로 이후 예측에서 Accuracy만으로 성능을 판단하면 안 된다.</li>
+    <li><code>Type</code>별 평균은 제품 품질 유형에 따른 운전 조건 차이를 비교하는 자료로 활용할 수 있다.</li>
+    <li>정상·고장별 평균은 고장 집단에서 온도, 회전속도, 토크, 공구 마모가 어떻게 달라지는지 확인하는 출발점이다.</li>
+    <li>공구 마모 기준 정렬 결과는 마모가 가장 적거나 큰 설비 관측값을 빠르게 점검하는 데 활용할 수 있다.</li>
+  </ul>
+</div>
+
+<p class="meta">식별 컬럼과 고장 원인 결과 컬럼은 모델 입력 분석에서 제외했으며, 이 보고서에는 지도학습이나 시각화를 포함하지 않았다.</p>
+</main>
+</body>
+</html>

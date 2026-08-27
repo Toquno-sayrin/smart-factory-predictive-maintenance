@@ -183,6 +183,7 @@ class AutoEverDashboardApp:
             try:
                 self.engine.load_data(file_path)
                 self.build_input_tab_content()
+                self.build_preprocess_tab_content()
                 self.build_eda_tab_content()
                 messagebox.showinfo("데이터 연동", f"파일이 성공적으로 로드되었습니다.\n({file_path})")
             except Exception as e:
@@ -283,12 +284,19 @@ class AutoEverDashboardApp:
         summary_frame = tk.Frame(self.tab_preprocess, bg="#F8FAFC", bd=1, relief="solid")
         summary_frame.pack(fill="x", padx=30, pady=5, ipady=5)
 
-        texts = [
-            "✅ 1. 결측치(Missing Values) 검증 결과: 결측치 0건 (Clean Data)",
-            "✅ 2. 불필요한 식별자 제거: 'UDI', 'Product ID' 컬럼 드롭 완료",
-            "✅ 3. 범주형 데이터 변환: 설비 등급 'Type' 원-핫 인코딩 적용 완료",
-            "✅ 4. 수치형 데이터 단위 통일: StandardScaler를 통한 정규화 자동 적용"
-        ]
+        df_load = self.engine.df
+        if df_load is None:
+            texts = ["데이터를 먼저 열어주세요."]
+        else:
+            missing_len = int(df_load.isnull().sum().sum())
+            identifier_status = "있음 (학습 시 제외)" if {'UDI', 'Product ID'} & set(df_load.columns) else "없음 (전처리 파일)"
+            type_status = "원-핫 인코딩 완료" if {'Type_H', 'Type_L', 'Type_M'}.issubset(df_load.columns) else "Type 컬럼 자동 인코딩"
+            texts = [
+                f"✅ 1. 결측치 검증: {missing_len:,}건",
+                f"✅ 2. 식별자 컬럼: {identifier_status}",
+                f"✅ 3. 범주형 컬럼: {type_status}",
+                "✅ 4. 수치형 컬럼: 학습 시 StandardScaler 적용"
+            ]
         for t in texts:
             tk.Label(summary_frame, text=t, font=(FONT_FAMILY, 10, "bold"), fg="#0052CC", bg="#F8FAFC").pack(anchor="w",
                                                                                                              padx=20,
@@ -329,11 +337,28 @@ class AutoEverDashboardApp:
             ("Machine failure", "타깃 (Binary)", "설비 고장 여부 (0: 정상, 1: 고장 / 불균형 약 3.4%)")
         ]
 
-        for item in column_descriptions:
-            tree_col.insert("", "end", values=item)
+        if self.engine.df is not None:
+            available_columns = set(self.engine.df.columns)
+            for item in column_descriptions:
+                if item[0] in available_columns or item[0] in {"UDI", "Product ID", "Type"}:
+                    tree_col.insert("", "end", values=item)
 
     def build_eda_tab_content(self):
         for widget in self.tab_eda.winfo_children(): widget.destroy()
+
+        df_load = self.engine.df
+        total_len = len(df_load) if df_load is not None else 0
+        fail_len = int(df_load['Machine failure'].sum()) if df_load is not None else 0
+        missing_len = int(df_load.isnull().sum().sum()) if df_load is not None else 0
+        if df_load is not None and 'Type' in df_load.columns:
+            type_summary = ' | '.join(f'{key}: {value / total_len:.0%}'
+                                      for key, value in df_load['Type'].value_counts().items())
+        elif df_load is not None:
+            type_summary = ' | '.join(f'{column[-1]}: {df_load[column].mean():.0%}'
+                                      for column in ('Type_L', 'Type_M', 'Type_H')
+                                      if column in df_load.columns)
+        else:
+            type_summary = '-'
 
         top_frame = tk.Frame(self.tab_eda, bg="#F4F6F9")
         top_frame.pack(fill="x", padx=15, pady=(15, 5))
@@ -357,10 +382,21 @@ class AutoEverDashboardApp:
             tk.Label(card, text=sub, font=(FONT_FAMILY, 8, "bold"), fg=color, bg="#FFFFFF").pack(anchor="w", padx=15,
                                                                                                  pady=(2, 5))
 
-        make_kpi_card(kpi_container, "전체 공정 레코드", "10,000 건", "결측치 0% (완전 정제)", is_good=True)
-        make_kpi_card(kpi_container, "누적 고장 발생 (Failure)", "339 건", "전체의 3.39%", is_good=False)
-        make_kpi_card(kpi_container, "설비 등급 (Type)", "L: 60% | M: 30% | H: 10%", "품질 분포", is_good=True)
-        make_kpi_card(kpi_container, "주요 고장 원인", "HDF (115건)", "방열 실패 최다", is_good=False)
+        make_kpi_card(kpi_container, "전체 공정 레코드", f"{total_len:,} 건", f"결측치 {missing_len:,}건",
+                      is_good=missing_len == 0)
+        make_kpi_card(kpi_container, "누적 고장 발생 (Failure)", f"{fail_len:,} 건",
+                      f"전체의 {fail_len / (total_len or 1):.2%}", is_good=False)
+        make_kpi_card(kpi_container, "설비 등급 (Type)", type_summary or "-", "현재 데이터 분포", is_good=True)
+        mode_counts = {mode: int(df_load[mode].sum()) for mode in ('HDF', 'OSF', 'PWF', 'TWF', 'RNF')
+                       if df_load is not None and mode in df_load.columns}
+        if mode_counts:
+            top_mode, top_count = max(mode_counts.items(), key=lambda item: item[1])
+            mode_text = f"{top_mode} ({top_count:,}건)"
+            mode_subtext = "고장 원인 컬럼 기준"
+        else:
+            mode_text = "전처리로 제거됨"
+            mode_subtext = "Machine failure만 사용"
+        make_kpi_card(kpi_container, "주요 고장 원인", mode_text, mode_subtext, is_good=False)
 
         mid_frame = tk.Frame(self.tab_eda, bg="#F4F6F9")
         mid_frame.pack(fill="both", expand=True, padx=15, pady=(5, 5))
@@ -380,18 +416,26 @@ class AutoEverDashboardApp:
         stats_tree.column("최댓값 (Max)", width=100, anchor="center")
         stats_tree.pack(fill="both", expand=True, padx=15, pady=(0, 15))
 
-        stats_tree.insert("", "end", values=("Air Temperature [K]", "295.30", "300.00", "304.50"))
-        stats_tree.insert("", "end", values=("Process Temp [K]", "305.70", "310.01", "313.80"))
-        stats_tree.insert("", "end", values=("Rotational Speed [rpm]", "1168", "1538.78", "2886"))
-        stats_tree.insert("", "end", values=("Torque [Nm]", "3.80", "39.99", "76.60"))
-        stats_tree.insert("", "end", values=("Tool Wear [min]", "0", "107.95", "253"))
+        sensor_columns = [
+            ("Air Temperature [K]", "Air temperature [K]"),
+            ("Process Temp [K]", "Process temperature [K]"),
+            ("Rotational Speed [rpm]", "Rotational speed [rpm]"),
+            ("Torque [Nm]", "Torque [Nm]"),
+            ("Tool Wear [min]", "Tool wear [min]")
+        ]
+        if df_load is not None:
+            for label, column in sensor_columns:
+                values = df_load[column]
+                stats_tree.insert("", "end", values=(label, f"{values.min():.2f}",
+                                                       f"{values.mean():.2f}", f"{values.max():.2f}"))
 
         chart_frame = tk.Frame(mid_frame, bg="#FFFFFF", relief="solid", bd=1)
         chart_frame.pack(side="right", fill="both", expand=True, padx=(5, 5))
 
         fig_bar, ax_bar = plt.subplots(figsize=(5, 2.3))
         f_modes = ['HDF\n(방열)', 'OSF\n(과부하)', 'PWF\n(전력)', 'TWF\n(마모)', 'RNF\n(우발)']
-        f_counts = [115, 98, 95, 46, 19]
+        f_counts = [int(df_load[mode].sum()) if df_load is not None and mode in df_load.columns else 0
+                for mode in ('HDF', 'OSF', 'PWF', 'TWF', 'RNF')]
         colors = ['#0A192F', '#1E3A8A', '#0052CC', '#3B82F6', '#93C5FD']
 
         bars = ax_bar.bar(f_modes, f_counts, color=colors, width=0.55)

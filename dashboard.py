@@ -6,7 +6,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from PIL import Image, ImageTk
 import seaborn as sns
 
-# 백엔드 엔진 임포트
 from engine import AutoEverSmartFactoryEngine
 
 FONT_FAMILY = "Pretendard"
@@ -690,3 +689,9 @@ class AutoEverDashboardApp:
             self.status_frame.config(bg="#F0FDF4", highlightbackground="#16A34A")
             self.lbl_predict_res.config(text=f"✅ [정상] 설비 가동 양호 (정상 확률: {p0 * 100:.1f}%)", fg="#16A34A", bg="#F0FDF4")
             self.lbl_action_guide.config(text=action_guide, fg="#15803D", bg="#F0FDF4", font=(FONT_FAMILY, 10))
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = AutoEverDashboardApp(root)
+    root.mainloop()

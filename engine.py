@@ -6,6 +6,12 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from sklearn.preprocessing import StandardScaler
 
 class AutoEverSmartFactoryEngine:
+    REQUIRED_COLUMNS = {
+        'Air temperature [K]',
+        'Process temperature [K]', 'Rotational speed [rpm]',
+        'Torque [Nm]', 'Tool wear [min]', 'Machine failure'
+    }
+
     def __init__(self):
         self.file_path = None
         self.df = None
@@ -17,8 +23,23 @@ class AutoEverSmartFactoryEngine:
         self.test_indices = []
 
     def load_data(self, file_path):
+        loaded_df = pd.read_csv(file_path, encoding='utf-8-sig')
+        loaded_df.columns = loaded_df.columns.astype(str).str.strip()
+
+        columns = set(loaded_df.columns)
+        has_type = 'Type' in columns or {'Type_H', 'Type_L', 'Type_M'}.issubset(columns)
+        missing_columns = sorted(self.REQUIRED_COLUMNS - columns)
+        if not has_type:
+            missing_columns.append('Type 또는 Type_H/Type_L/Type_M')
+        if missing_columns:
+            missing = ', '.join(missing_columns)
+            raise ValueError(
+                "스마트팩토리 센서 형식의 CSV가 아닙니다. "
+                f"필수 컬럼이 없습니다: {missing}"
+            )
+
         self.file_path = file_path
-        self.df = pd.read_csv(file_path)
+        self.df = loaded_df
         return self.df
 
     def run_pipeline(self, test_size=0.2, cv_setting="5-Fold"):
@@ -33,11 +54,12 @@ class AutoEverSmartFactoryEngine:
             'Tool wear [min]': 'Tool_wear'
         })
 
-        df_clean = df_work.drop(columns=['UDI', 'Product ID'])
-        df_clean = pd.get_dummies(df_clean, columns=['Type'])
+        df_clean = df_work.drop(columns=['UDI', 'Product ID'], errors='ignore')
+        if 'Type' in df_clean.columns:
+            df_clean = pd.get_dummies(df_clean, columns=['Type'])
 
         target = 'Machine failure'
-        X = df_clean.drop(columns=[target, 'TWF', 'HDF', 'PWF', 'OSF', 'RNF'])
+        X = df_clean.drop(columns=[target, 'TWF', 'HDF', 'PWF', 'OSF', 'RNF'], errors='ignore')
         y = df_clean[target]
 
         numeric_cols = ['Air_temperature', 'Process_temperature', 'Rotational_speed', 'Torque', 'Tool_wear']
@@ -83,10 +105,17 @@ class AutoEverSmartFactoryEngine:
         probabilities = self.model.predict_proba(X_sample)[0]
         prediction = self.model.predict(X_sample)[0]
 
+        if 'Type' in raw_sample.index:
+            machine_type = raw_sample['Type']
+        else:
+            type_columns = ['Type_H', 'Type_L', 'Type_M']
+            machine_type = next((column[-1] for column in type_columns
+                                 if column in raw_sample.index and raw_sample[column] == 1), 'Unknown')
+
         machine_info = {
-            "UDI": raw_sample['UDI'],
-            "Product ID": raw_sample['Product ID'],
-            "Type": raw_sample['Type']
+            "UDI": raw_sample.get('UDI', sample_idx + 1),
+            "Product ID": raw_sample.get('Product ID', f'Machine-{sample_idx + 1:05d}'),
+            "Type": machine_type
         }
 
         action_guide = "특이사항 없음. 정상 가동 유지 중"
@@ -102,7 +131,7 @@ class AutoEverSmartFactoryEngine:
 
             temp_diff = process_temp - air_temp
             power = torque * (rpm * 2 * np.pi / 60)
-            osf_limit = 11000 if raw_sample['Type'] == 'L' else (12000 if raw_sample['Type'] == 'M' else 13000)
+            osf_limit = 11000 if machine_type == 'L' else (12000 if machine_type == 'M' else 13000)
 
             if tool_wear >= 200:
                 detected_failures.append("공구 마모 한계(TWF)")
@@ -139,7 +168,7 @@ class AutoEverSmartFactoryEngine:
         problematic_features = list(set(problematic_features))
 
         display_data = [
-            ("설비 등급 (Type)", raw_sample['Type']),
+            ("설비 등급 (Type)", machine_type),
             ("Air Temp [K]", f"{raw_sample['Air temperature [K]']:.1f}"),
             ("Process Temp [K]", f"{raw_sample['Process temperature [K]']:.1f}"),
             ("Speed [rpm]", f"{raw_sample['Rotational speed [rpm]']:.0f}"),

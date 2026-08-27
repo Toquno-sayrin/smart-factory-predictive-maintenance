@@ -262,9 +262,15 @@ class AutoEverDashboardApp:
             tree.heading(col, text=col)
             tree.column(col, width=90, anchor="center")
 
-        for _, r in df_load.iterrows():
+        for row_index, r in df_load.iterrows():
+            if 'Type' in r.index:
+                type_value = r['Type']
+            else:
+                type_value = next((column[-1] for column in ('Type_H', 'Type_L', 'Type_M')
+                                   if column in r.index and r[column] == 1), 'Unknown')
+            udi_value = r.get('UDI', row_index + 1)
             fail_str = "1 (고장)" if r['Machine failure'] == 1 else "0 (정상)"
-            tree.insert("", "end", values=(r['UDI'], r['Type'], r['Air temperature [K]'], r['Process temperature [K]'],
+            tree.insert("", "end", values=(udi_value, type_value, r['Air temperature [K]'], r['Process temperature [K]'],
                                            r['Rotational speed [rpm]'], r['Torque [Nm]'], r['Tool wear [min]'],
                                            fail_str))
 

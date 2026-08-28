@@ -9,7 +9,7 @@
 * **실시간 설비 관제:** 불량 확률이 높은 위험 설비를 스캔하고, 문제 센서 검출 및 즉각적인 대응 가이드라인(Rules) 제공
 
 ## 🛠 기술 스택 (Tech Stack)
-* **Language:** Python 3.x
+* **Language:** Python
 * **ML/Data:** XGBoost, Scikit-learn, Pandas, NumPy
 * **GUI/Visualization:** Tkinter, Matplotlib, Seaborn
 

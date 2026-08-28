@@ -21,7 +21,7 @@ bash
 python -m pip install -r requirements.txt
 
 **2. 애플리케이션 실행**
-Bash
+bash
 python src/dashboard.py
 사용 안내: 프로그램이 열리면 좌측 상단의 열기 버튼을 눌러 ai4i2020.csv 파일을 선택한 뒤, [XGBoost 학습] 및 [전체 관제 스캔] 버튼을 차례로 클릭하여 분석을 진행
 

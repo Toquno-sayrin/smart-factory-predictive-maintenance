@@ -13,12 +13,15 @@
 * **ML/Data:** XGBoost, Scikit-learn, Pandas, NumPy
 * **GUI/Visualization:** Tkinter, Matplotlib, Seaborn
 
-## 🚀 실행 방법 (How to Run)
+
+
+🚀 실행 방법 (How to Run)
 **1. 패키지 설치**
-```bash
+
+bash
 python -m pip install -r requirements.txt
 
-2. 애플리케이션 실행
+**2. 애플리케이션 실행**
 
 Bash
 python src/dashboard.py

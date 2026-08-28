@@ -14,15 +14,14 @@
 * **GUI/Visualization:** Tkinter, Matplotlib, Seaborn
 
 
+```
+## 🚀 실행 방법 (How to Run)
 
-🚀 실행 방법 (How to Run)
 **1. 패키지 설치**
-
 bash
 python -m pip install -r requirements.txt
 
 **2. 애플리케이션 실행**
-
 Bash
 python src/dashboard.py
 사용 안내: 프로그램이 열리면 좌측 상단의 열기 버튼을 눌러 ai4i2020.csv 파일을 선택한 뒤, [XGBoost 학습] 및 [전체 관제 스캔] 버튼을 차례로 클릭하여 분석을 진행
@@ -42,3 +41,5 @@ smart-factory-predictive-maintenance/
 │   └── engine.py              # 데이터 로드 및 XGBoost 파이프라인 엔진
 ├── 📄 requirements.txt        # 프로젝트 구동에 필요한 패키지 목록
 └── 📄 README.md               # 프로젝트 설명서
+
+

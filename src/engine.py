@@ -18,6 +18,7 @@ class AutoEverSmartFactoryEngine:
         self.scaler = StandardScaler()
         self.is_trained = False
         self.model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
+        self.decision_threshold = 0.5
         self.X_test = None
         self.y_test = None
         self.test_indices = []
@@ -67,9 +68,13 @@ class AutoEverSmartFactoryEngine:
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)
 
+        neg_count = int((y_train == 0).sum())
+        pos_count = int((y_train == 1).sum())
+        self.model.set_params(scale_pos_weight=neg_count / pos_count)
+
         self.model.fit(X_train, y_train)
-        y_pred = self.model.predict(X_test)
         y_proba = self.model.predict_proba(X_test)[:, 1]
+        y_pred = (y_proba >= self.decision_threshold).astype(int)
 
         fpr, tpr, _ = roc_curve(y_test, y_proba)
         roc_auc = auc(fpr, tpr)
@@ -103,7 +108,7 @@ class AutoEverSmartFactoryEngine:
         X_sample = self.X_test.loc[[sample_idx]]
 
         probabilities = self.model.predict_proba(X_sample)[0]
-        prediction = self.model.predict(X_sample)[0]
+        prediction = int(probabilities[1] >= self.decision_threshold)
 
         if 'Type' in raw_sample.index:
             machine_type = raw_sample['Type']
@@ -122,7 +127,7 @@ class AutoEverSmartFactoryEngine:
         problematic_features = []
         detected_failures = []
 
-        if prediction == 1 or probabilities[1] >= 0.5:
+        if prediction == 1:
             tool_wear = raw_sample['Tool wear [min]']
             torque = raw_sample['Torque [Nm]']
             rpm = raw_sample['Rotational speed [rpm]']

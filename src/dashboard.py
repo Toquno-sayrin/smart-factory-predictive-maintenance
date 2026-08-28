@@ -397,6 +397,21 @@ class AutoEverDashboardApp:
             mode_subtext = "Machine failure만 사용"
         make_kpi_card(kpi_container, "주요 고장 원인", mode_text, mode_subtext, is_good=False)
 
+        sub_cols = [c for c in ('TWF', 'HDF', 'PWF', 'OSF', 'RNF')
+                    if df_load is not None and c in df_load.columns]
+        if df_load is not None and sub_cols:
+            any_sub = df_load[sub_cols].any(axis=1)
+            mf_flag = df_load['Machine failure'] == 1
+            only_label = int((mf_flag & ~any_sub).sum())
+            only_subtype = int((any_sub & ~mf_flag).sum())
+            mismatch_count = only_label + only_subtype
+            consistency_val = f"{mismatch_count:,}건"
+            consistency_sub = f"원인미상 {only_label} · 미검출 {only_subtype}"
+        else:
+            consistency_val = "-"
+            consistency_sub = "세부유형 컬럼 없음"
+        make_kpi_card(kpi_container, "라벨 정합성 (Data Quality)", consistency_val, consistency_sub, is_good=False)
+
         mid_frame = tk.Frame(self.tab_eda, bg="#F4F6F9")
         mid_frame.pack(fill="both", expand=True, padx=15, pady=(5, 5))
 
@@ -630,7 +645,7 @@ class AutoEverDashboardApp:
                 idx)
             p1 = probabilities[1]
 
-            if prediction == 1 or p1 >= 0.5:
+            if prediction == 1:
                 risk_count += 1
                 prob_str = f"{p1 * 100:.1f}% (위험)"
                 item_id = self.tree_risk.insert("", "end",
@@ -681,7 +696,7 @@ class AutoEverDashboardApp:
             else:
                 self.tree_predict.insert("", "end", values=d)
 
-        if prediction == 1 or p1 >= 0.5:
+        if prediction == 1:
             self.status_frame.config(bg="#FEF2F2", highlightbackground="#EF4444")
             self.lbl_predict_res.config(text=f"⚠️ [위험] 고장 징후 포착! (불량 확률: {p1 * 100:.1f}%)", fg="#EF4444", bg="#FEF2F2")
             self.lbl_action_guide.config(text=action_guide, fg="#B91C1C", bg="#FEF2F2", font=(FONT_FAMILY, 10, "bold"))

@@ -559,7 +559,7 @@ class AutoEverDashboardApp:
         header_frame.pack(fill="x", pady=(15, 5), padx=25)
         tk.Label(header_frame, text="[ 스마트 팩토리 실시간 위험 설비 통합 관제 ]", font=(FONT_FAMILY, 14, "bold"), fg="#0A192F",
                  bg="#F4F6F9").pack(side="left")
-        self.lbl_scan_count = tk.Label(header_frame, text="스캔된 위험 설비: 0대", font=(FONT_FAMILY, 11, "bold"), fg="#EF4444",
+        self.lbl_scan_count = tk.Label(header_frame, text="탐지된 위험 징후 건수: 0건", font=(FONT_FAMILY, 11, "bold"), fg="#EF4444",
                                        bg="#F4F6F9")
         self.lbl_scan_count.pack(side="right")
 
@@ -660,7 +660,7 @@ class AutoEverDashboardApp:
                     "problematic_features": problematic_features
                 }
 
-        self.lbl_scan_count.config(text=f"스캔된 위험 설비: {risk_count}대")
+        self.lbl_scan_count.config(text=f"스캔된 위험 징후 건수: {risk_count}건")
         if risk_count > 0:
             first_item = self.tree_risk.get_children()[0]
             self.tree_risk.selection_set(first_item)

@@ -119,9 +119,9 @@ class AutoEverDashboardApp:
 
         btn_frame = tk.Frame(left_frame, bg="#FFFFFF")
         btn_frame.pack(fill="x", padx=15, pady=(15, 10))
-        tk.Button(btn_frame, text="XGBoost 학습", font=(FONT_FAMILY, 10, "bold"), bg="#0052CC", fg="#FFFFFF", width=12,
+        tk.Button(btn_frame, text="XGBoost 학습", font=(FONT_FAMILY, 8, "bold"), bg="#0052CC", fg="#FFFFFF", width=12,
                   height=2, command=self.start_training, takefocus=0, bd=0).pack(side="left", padx=2)
-        tk.Button(btn_frame, text="전체 관제 스캔", font=(FONT_FAMILY, 10, "bold"), bg="#0EA5E9", fg="#FFFFFF", width=10,
+        tk.Button(btn_frame, text="전체 관제 스캔", font=(FONT_FAMILY, 8, "bold"), bg="#0EA5E9", fg="#FFFFFF", width=12,
                   height=2, command=self.start_prediction, takefocus=0, bd=0).pack(side="right", padx=2)
 
         rule_frame = tk.LabelFrame(left_frame, text=" 도메인 물리 규칙 (AI4I Rules) ", font=(FONT_FAMILY, 9, "bold"),
@@ -375,7 +375,7 @@ class AutoEverDashboardApp:
             tk.Label(card, text=title, font=(FONT_FAMILY, 9, "bold"), fg="#64748B", bg="#FFFFFF").pack(anchor="w",
                                                                                                        padx=15,
                                                                                                        pady=(8, 2))
-            tk.Label(card, text=val, font=(FONT_FAMILY, 13, "bold"), fg="#0A192F", bg="#FFFFFF").pack(anchor="w",
+            tk.Label(card, text=val, font=(FONT_FAMILY, 11, "bold"), fg="#0A192F", bg="#FFFFFF").pack(anchor="w",
                                                                                                       padx=15)
             color = "#10B981" if is_good else "#EF4444"
             tk.Label(card, text=sub, font=(FONT_FAMILY, 8, "bold"), fg=color, bg="#FFFFFF").pack(anchor="w", padx=15,

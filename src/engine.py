@@ -71,7 +71,6 @@ class AutoEverSmartFactoryEngine:
             bins=[-1, 50, 100, 150, 200, 9999],
             labels=[0, 1, 2, 3, 4]
         ).astype(int)
-        # ==========================================
 
         if 'Type' in df_clean.columns:
             df_clean = pd.get_dummies(df_clean, columns=['Type'])
@@ -82,7 +81,7 @@ class AutoEverSmartFactoryEngine:
 
         numeric_cols = [
             'Air_temperature', 'Process_temperature', 'Rotational_speed', 'Torque', 'Tool_wear',
-            'power', 'temp_diff', 'wear_torque', 'power_dev'  # 새로 추가한 수치형 피처들 추가
+            'power', 'temp_diff', 'wear_torque', 'power_dev'  
         ]
         X[numeric_cols] = self.scaler.fit_transform(X[numeric_cols])
 

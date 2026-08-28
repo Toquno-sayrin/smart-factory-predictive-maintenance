@@ -54,8 +54,25 @@ class AutoEverSmartFactoryEngine:
             'Torque [Nm]': 'Torque',
             'Tool wear [min]': 'Tool_wear'
         })
-
+        #파생변수 추가
         df_clean = df_work.drop(columns=['UDI', 'Product ID'], errors='ignore')
+        df_clean['power'] = df_clean['Rotational_speed'] * df_clean['Torque']
+        df_clean['temp_diff'] = df_clean['Process_temperature'] - df_clean['Air_temperature']
+        df_clean['wear_torque'] = df_clean['Tool_wear'] * df_clean['Torque']
+
+        df_clean['flag_heat'] = ((df_clean['temp_diff'] < 8.6) & (df_clean['Rotational_speed'] < 1380)).astype(int)
+        df_clean['flag_power'] = ((df_clean['power'] < 3500) | (df_clean['power'] > 9000)).astype(int)
+        df_clean['flag_wear'] = (df_clean['Tool_wear'] >= 200).astype(int)
+
+        df_clean['risk_count'] = df_clean['flag_heat'] + df_clean['flag_power'] + df_clean['flag_wear']
+        df_clean['power_dev'] = np.abs(df_clean['power'] - df_clean['power'].median())
+        df_clean['wear_stage'] = pd.cut(
+            df_clean['Tool_wear'],
+            bins=[-1, 50, 100, 150, 200, 9999],
+            labels=[0, 1, 2, 3, 4]
+        ).astype(int)
+        # ==========================================
+
         if 'Type' in df_clean.columns:
             df_clean = pd.get_dummies(df_clean, columns=['Type'])
 
@@ -63,7 +80,10 @@ class AutoEverSmartFactoryEngine:
         X = df_clean.drop(columns=[target, 'TWF', 'HDF', 'PWF', 'OSF', 'RNF'], errors='ignore')
         y = df_clean[target]
 
-        numeric_cols = ['Air_temperature', 'Process_temperature', 'Rotational_speed', 'Torque', 'Tool_wear']
+        numeric_cols = [
+            'Air_temperature', 'Process_temperature', 'Rotational_speed', 'Torque', 'Tool_wear',
+            'power', 'temp_diff', 'wear_torque', 'power_dev'  # 새로 추가한 수치형 피처들 추가
+        ]
         X[numeric_cols] = self.scaler.fit_transform(X[numeric_cols])
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)

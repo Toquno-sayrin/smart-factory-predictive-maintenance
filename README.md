@@ -14,9 +14,8 @@
 * **GUI/Visualization:** Tkinter, Matplotlib, Seaborn
 
 
-```
 ## 🚀 실행 방법 (How to Run)
-
+```
 **1. 패키지 설치**
 bash
 python -m pip install -r requirements.txt
